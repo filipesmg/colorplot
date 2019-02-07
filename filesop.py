@@ -77,7 +77,22 @@ def get_values(field_component,files,double_angles):
     # Building the two-dimension variable to be plotted
     for line in ndata:
       # Transforming angles to degree and frequency to THz
-      values.append( ( field[field_component]*180 , line[0]*13.6*1000/4.135667 , line[1] , line[2] , np.sqrt((line[1])**2 + (line[2])**2 ) , np.arctan2(line[2],line[1]),  mangle[0] , mangle[1] ) )
+      # As a function of the field angle:
+      # values.append( ( field[field_component]*180 , line[0]*13.6*1000/4.135667 , line[1] , line[2] ,  mangle[0] , mangle[1] ) )
+      # As a function of the magnetization angle:
+      values.append( ( mangle[field_component-1]*180 , line[0]*13.6*1000/4.135667 , line[1] , line[2] ,  mangle[0] , mangle[1] ) )
+      # values.append( ( field[field_component]*180 , line[0]*13.6*1000/4.135667 , line[1] , line[2] ,  field[1] , field[2] ) )
       if (double_angles==True) and (field[field_component] != 1.0):
-        values.append( ( (2.0-field[field_component])*180 , line[0]*13.6*1000/4.135667 , line[1] , line[2] , np.sqrt((line[1])**2 + (line[2])**2 ) , np.arctan2(line[2],line[1]) , (-2*field_component+4)+(2*field_component-3)*mangle[0] , (2*field_component-2)+(-2*field_component+3)*mangle[1] ) )
+        # As a function of the field angle:
+        # values.append( ( (2.0-field[field_component])*180 , line[0]*13.6*1000/4.135667 , line[1] , line[2] , (-2*field_component+4)+(2*field_component-3)*mangle[0] , (2*field_component-2)+(-2*field_component+3)*mangle[1] ) )
+        # As a function of the magnetization angle:
+        add_line = ( (2.0-mangle[field_component-1])*180 , line[0]*13.6*1000/4.135667 , line[1] , line[2] , (-2*field_component+4)+(2*field_component-3)*mangle[0] , (2*field_component-2)+(-2*field_component+3)*mangle[1] )
+        # values.append( ( (2.0-field[field_component])*180 , line[0]*13.6*1000/4.135667 , line[1] , line[2] , (-2*field_component+4)+(2*field_component-3)*field[1] , (2*field_component-2)+(-2*field_component+3)*field[2] ) )
+        values.append( add_line )
   return values
+
+
+
+
+
+

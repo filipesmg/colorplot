@@ -72,4 +72,36 @@ def plot_cuts( nfigs , ncols , x , y):
     plt.tight_layout()
     plt.savefig(prm.output_prefix+'_cut_'+prm.stype[l]+'.pdf',transparent=True,dpi=prm.fig_dpi, bbox_inches='tight')
     plt.clf()
+
+  # Custom cut: in this case, damping-like field:
+  comp=2
+  for l in range( nfigs ):
+    fig, axs = plt.subplots(2, 1, figsize=(6, 6), sharey=False)
+    # for i in range( len(y[l][1]) ):
+    #   print i,len(y[l][1]),i//2,i%2
+    axs[0].set_prop_cycle( cycler(color=prm.colors) * cycler(ls=['solid']) )
+    axs[0].set_title('Static limit (dc)', size=prm.titlesize, pad=15)
+    axs[1].set_prop_cycle( cycler(color=prm.colors) * cycler(ls=['dashed']) )
+    axs[1].set_title('Resonance (ac)', size=prm.titlesize, pad=15)
+    for i in range( len(y[l][comp]) ):
+      i0 = i%2
+      
+      axs[i0].plot( x[l][comp][i],y[l][comp][i] )
+
+      for axis in ['top','bottom','left','right']:
+        axs[i0].spines[axis].set_linewidth(prm.linewidth)
+      # axs[i].text(0.0, 1.03*np.array(y[l][j][i]).max(), letters[j])
+      # axs[i].set_title(prm.clabel[j], size=prm.titlesize, pad=15)
+      axs[i0].set_ylabel(prm.clabel[comp])
+      axs[i0].set_xlabel(r'Magnetization angle (degrees)', labelpad=-0.1)
+      axs[i0].set_xlim(np.array(x[l][comp][0]).min(),np.array(x[l][comp][0]).max())
+      axs[i0].set_xticks( np.arange(np.array(x[l][comp][0]).min(), np.array(x[l][comp][0]).max()+0.0001, 90) )
+      axs[i0].tick_params(axis='x', colors='black',width=prm.linewidth)
+      axs[i0].tick_params(axis='y', colors='black',width=prm.linewidth)
+      axs[i0].ticklabel_format(axis='y',style='sci', scilimits=(0,0))
+
+    plt.tight_layout()
+    plt.savefig(prm.output_prefix+'_cut_lg_'+prm.stype[l]+'.pdf',transparent=True,dpi=prm.fig_dpi, bbox_inches='tight')
+
+
   return

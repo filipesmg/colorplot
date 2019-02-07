@@ -91,15 +91,12 @@ if __name__ == "__main__":
       arg = arg + 1
 
   # Transforming from global to local frame of reference
-  if prm.local:
-    values_local = [ None for i in range( num_plots ) ]
-    for i in range(nrows):
-      i0 = i*ncols
-      i1 = (i+1)*ncols
-      values_local[i0:i1] = cf.global_to_local(values[i0:i1],prm.deltas)
-  else:
-    values_local = values
-
+  values_local = [ None for i in range( num_plots ) ]
+  for i in range(nrows):
+    i0 = i*ncols
+    i1 = (i+1)*ncols
+    values_local[i0:i1] = cf.global_to_local(values[i0:i1],prm.deltas,prm.local)
+  
 ################################ CUTS ##########################################
   if prm.make_cuts:
     print("Creating cuts...")
