@@ -57,11 +57,12 @@ def plot_cuts( nfigs , ncols , x , y):
       for i in range( len(y[l][j]) ):
         axs[j].plot( x[l][j][i],y[l][j][i] )
 
+      axs[j].axhline(y=0, linestyle='-', linewidth=1.0, color='k')
       for axis in ['top','bottom','left','right']:
         axs[j].spines[axis].set_linewidth(prm.linewidth)
       # axs[j].text(0.0, 1.03*np.array(y[l][j][i]).max(), letters[j])
       # axs[j].set_title(prm.clabel[j], size=prm.titlesize, pad=15)
-      axs[j].set_ylabel(prm.clabel[j])
+      axs[j].set_ylabel(prm.clabel_local[j] if prm.local else prm.clabel_global[j])
       axs[j].set_xlabel(r'Magnetization angle (degrees)')
       axs[j].set_xlim(np.array(x[l][0][0]).min(),np.array(x[l][0][0]).max())
       axs[j].set_xticks( np.arange(np.array(x[l][0][0]).min(), np.array(x[l][0][0]).max()+0.0001, 90) )
@@ -75,6 +76,7 @@ def plot_cuts( nfigs , ncols , x , y):
 
   # Custom cut: in this case, damping-like field:
   comp=2
+  prefix=['_fl_','_dl_','_lg_']
   for l in range( nfigs ):
     fig, axs = plt.subplots(2, 1, figsize=(6, 6), sharey=False)
     # for i in range( len(y[l][1]) ):
@@ -91,8 +93,8 @@ def plot_cuts( nfigs , ncols , x , y):
       for axis in ['top','bottom','left','right']:
         axs[i0].spines[axis].set_linewidth(prm.linewidth)
       # axs[i].text(0.0, 1.03*np.array(y[l][j][i]).max(), letters[j])
-      # axs[i].set_title(prm.clabel[j], size=prm.titlesize, pad=15)
-      axs[i0].set_ylabel(prm.clabel[comp])
+      # axs[i].set_title(prm.clabel_local[j] if prm.local else prm.clabel_global[j], size=prm.titlesize, pad=15)
+      axs[i0].set_ylabel(prm.clabel_local[comp] if prm.local else prm.clabel_global[comp])
       axs[i0].set_xlabel(r'Magnetization angle (degrees)', labelpad=-0.1)
       axs[i0].set_xlim(np.array(x[l][comp][0]).min(),np.array(x[l][comp][0]).max())
       axs[i0].set_xticks( np.arange(np.array(x[l][comp][0]).min(), np.array(x[l][comp][0]).max()+0.0001, 90) )
@@ -101,7 +103,7 @@ def plot_cuts( nfigs , ncols , x , y):
       axs[i0].ticklabel_format(axis='y',style='sci', scilimits=(0,0))
 
     plt.tight_layout()
-    plt.savefig(prm.output_prefix+'_cut_lg_'+prm.stype[l]+'.pdf',transparent=True,dpi=prm.fig_dpi, bbox_inches='tight')
+    plt.savefig(prm.output_prefix+'_cut'+prefix[comp]+prm.stype[l]+'.pdf',transparent=True,dpi=prm.fig_dpi, bbox_inches='tight')
 
 
   return

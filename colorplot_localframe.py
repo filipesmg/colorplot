@@ -62,8 +62,8 @@ if __name__ == "__main__":
   if(len(sys.argv) < 2):
     usage()
 
-  # Check if files are given
-  if len(sys.argv[1:])%3 != 0:
+  # Check if multiple of 3 files are given (to make transformation to local frame)
+  if len(sys.argv[1:])%3 != 0 and prm.local :
     print("Error: 3 components are needed to transform to the local frame of reference!")
     usage()
 
@@ -144,5 +144,83 @@ if __name__ == "__main__":
       zmax[k] = [max([ j.max() for j in z[k][ncols*i:ncols*(i+1)] ]) for i in range(0,nrows)]
 
     #Plotting colormap
-    pc.plot_colormap(num_plots,nrows,ncols,x,y,z,zmin,zmax)
+    pc.plot_colormap(nrows,ncols,x,y,z,zmin,zmax)
 
+    # Custom colorplot
+    # Adding results to be plotted
+    xs=[]
+    ys=[]
+    zs=[]
+    zsmin=[]
+    zsmax=[]
+    xs.append( x[ij_to_arg[0,0]]    )
+    ys.append( y[ij_to_arg[0,0]]    )
+    zs.append( (z[1][ij_to_arg[1,0]]/ z[1][ij_to_arg[0,0]]) )
+    zsmin.append( -1.e2 )
+    zsmax.append( 1.e2 )
+
+    xs.append( x[ij_to_arg[0,0]]    )
+    ys.append( y[ij_to_arg[0,0]]    )
+    zs.append( (z[0][ij_to_arg[1,0]]/ z[0][ij_to_arg[0,0]]) )
+    zsmin.append( zs[1].min() )
+    zsmax.append( zs[1].max() )
+
+    xs.append( x[ij_to_arg[0,0]]    )
+    ys.append( y[ij_to_arg[0,0]]    )
+    zs.append( (z[2][ij_to_arg[1,0]]/ z[2][ij_to_arg[0,0]]) )
+    zsmin.append( zs[2].min() )
+    zsmax.append( zs[2].max() )
+
+    xlabels=[r'$\theta$ (degrees)', r'$\theta$ (degrees)', r'$\theta$ (degrees)']
+    ylabels=[r'Frequency (THz)', r'Frequency (THz)', r'Frequency (THz)']
+    clabels=[r'$\hat{\tau}^\text{in-phase}_\text{DL}/\hat{\tau}^\text{in-phase}_\text{FL}$', r'$\hat{\tau}^\text{out-phase}_\text{DL}/\hat{\tau}^\text{out-phase}_\text{FL}$', r'$|\hat{\tau}_\text{DL}|/|\hat{\tau}_\text{FL}|$']
+    titles=[r'$z\rightarrow y$',r'$z\rightarrow y$',r'$z\rightarrow y$']
+    pc.plot_custom_colormap(1,len(zs),xs,ys,zs,zsmin,zsmax,xlabels,ylabels,clabels,titles,prm.output_prefix+'_ratio.pdf')
+
+    # # Adding results to be plotted
+    # xs=[]
+    # ys=[]
+    # zs=[]
+    # zsmin=[]
+    # zsmax=[]
+    # xs.append( x[ij_to_arg[0,0]]    )
+    # ys.append( y[ij_to_arg[0,0]]    )
+    # zs.append( z[3][ij_to_arg[0,0]] )
+    # zsmin.append( zs[0].min() )
+    # zsmax.append( zs[0].max() )
+
+    # xs.append( x[ij_to_arg[1,0]]    )
+    # ys.append( y[ij_to_arg[1,0]]    )
+    # zs.append( z[3][ij_to_arg[1,0]] )
+    # zsmin.append( zs[1].min() )
+    # zsmax.append( zs[1].max() )
+
+    # xlabels=[r'$\theta$ (degrees)', r'$\theta$ (degrees)']
+    # ylabels=[r'Frequency (THz)', r'Frequency (THz)']
+    # clabels=[r'Phase $\varphi^\text{SOI}_\text{Fe,FL}$', r'Phase $\varphi^\text{SOI}_\text{Fe,DL}$']
+    # titles=[r'$z\rightarrow y$',r'$z\rightarrow y$']
+    # pc.plot_custom_colormap(1,len(zs),xs,ys,zs,zsmin,zsmax,xlabels,ylabels,clabels,titles,'SOT_phases.pdf')
+
+    # Adding results to be plotted
+    # xs=[]
+    # ys=[]
+    # zs=[]
+    # zsmin=[]
+    # zsmax=[]
+    # xs.append( x[ij_to_arg[1,2]]    )
+    # ys.append( y[ij_to_arg[1,2]]    )
+    # zs.append( z[1][ij_to_arg[1,2]] )
+    # zsmin.append( zs[0].min() )
+    # zsmax.append( zs[0].max() )
+
+    # # xs.append( x[ij_to_arg[1,0]]    )
+    # # ys.append( y[ij_to_arg[1,0]]    )
+    # # zs.append( z[3][ij_to_arg[1,0]] )
+    # # zsmin.append( zs[1].min() )
+    # # zsmax.append( zs[1].max() )
+
+    # xlabels=[r'$\theta$ (degrees)', r'$\theta$ (degrees)']
+    # ylabels=[r'Frequency (THz)', r'Frequency (THz)']
+    # clabels=[r'Phase $\varphi^\text{SOI}_\text{Fe,FL}$', r'Phase $\varphi^\text{SOI}_\text{Fe,DL}$']
+    # titles=[r'$z\rightarrow y$',r'$z\rightarrow y$']
+    # pc.plot_custom_colormap(1,len(zs),xs,ys,zs,zsmin,zsmax,xlabels,ylabels,clabels,titles,'Beff_custom.pdf')

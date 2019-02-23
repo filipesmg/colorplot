@@ -23,6 +23,9 @@ def build_local_frame(mtheta,mphi,deltas):
 ################################################################################
 def global_to_local(values_global,deltas,local):
   values_local = [ [] for _ in range(3) ]
+  field_like_phase_old = 0.0
+  damp_like_phase_old  = 0.0
+  longitud_phase_old   = 0.0
   for line_x,line_y,line_z in zip(values_global[0],values_global[1],values_global[2]):
     if (not (line_x[0] == line_y[0] == line_z[0])) or (not (line_x[1] == line_y[1] == line_z[1])) or (not (line_x[-2] == line_y[-2] == line_z[-2])) or (not (line_x[-1] == line_y[-1] == line_z[-1])):
       print("Magnetization direction is not the same for all the inputs")
@@ -38,21 +41,47 @@ def global_to_local(values_global,deltas,local):
       vec_real = ( line_x[2] , -line_y[2] , -line_z[2] )
       vec_imag = ( line_x[3] , -line_y[3] , -line_z[3] )
     else:
-      print "TEM"
+      print "NOT IMPLEMENTED ANGLES"
+      sys.exit()
 
     if local:
       xp,yp,zp = build_local_frame(line_x[-2],line_x[-1],deltas)
     else:
       xp,yp,zp = (1.0,0.0,0.0),(0.0,1.0,0.0),(0.0,0.0,1.0)
 
-    field_like_real = np.dot(vec_real,xp)
-    damp_like_real  = np.dot(vec_real,yp)
-    longitud_real   = np.dot(vec_real,zp)
-    field_like_imag = np.dot(vec_imag,xp)
-    damp_like_imag  = np.dot(vec_imag,yp)
-    longitud_imag   = np.dot(vec_imag,zp)
+    field_like_real  = np.dot(vec_real,xp)
+    damp_like_real   = np.dot(vec_real,yp)
+    longitud_real    = np.dot(vec_real,zp)
+    field_like_imag  = np.dot(vec_imag,xp)
+    damp_like_imag   = np.dot(vec_imag,yp)
+    longitud_imag    = np.dot(vec_imag,zp)
+    field_like_amp   = np.sqrt((field_like_real)**2 + (field_like_imag)**2 )
+    damp_like_amp    = np.sqrt((damp_like_real)**2 + (damp_like_imag)**2 )  
+    longitud_amp     = np.sqrt((longitud_real)**2 +  (longitud_imag)**2 )   
+    field_like_phase = np.arctan2(field_like_real,field_like_imag)
+    damp_like_phase  = np.arctan2(damp_like_real,damp_like_imag)  
+    longitud_phase   = np.arctan2(longitud_real,longitud_imag)    
+    # if field_like_amp>1.e-8:
+    #   field_like_phase = np.arctan2(field_like_real,field_like_imag)
+    #   field_like_phase_old = field_like_phase
+    # else:
+    #   field_like_phase = field_like_phase_old
+    # if damp_like_amp>1.e-8:
+    #   damp_like_phase  = np.arctan2(damp_like_real,damp_like_imag)  
+    #   damp_like_phase_old = damp_like_phase
+    # else:
+    #   damp_like_phase = damp_like_phase_old
+    # if longitud_amp>1.e-8:
+    #   longitud_phase   = np.arctan2(longitud_real,longitud_imag)    
+    #   longitud_phase_old = longitud_phase
+    # else:
+    #   longitud_phase = longitud_phase_old
 
-    values_local[0].append( (line_x[0], line_x[1], field_like_real, field_like_imag, np.sqrt((field_like_real)**2 + (field_like_imag)**2 ) , np.arctan2(field_like_imag,field_like_real) , line_x[-2] , line_x[-1] ) )
-    values_local[1].append( (line_x[0], line_x[1], damp_like_real , damp_like_imag , np.sqrt((damp_like_real)**2 + (damp_like_imag)**2 )   , np.arctan2(damp_like_imag,damp_like_real)   , line_x[-2] , line_x[-1] ) )
-    values_local[2].append( (line_x[0], line_x[1], longitud_real  , longitud_imag  , np.sqrt((longitud_real)**2 +  (longitud_imag)**2 )    , np.arctan2(longitud_imag,longitud_real)     , line_x[-2] , line_x[-1] ) )
+    values_local[0].append( (line_x[0], line_x[1], field_like_real, field_like_imag, field_like_amp , field_like_phase , line_x[-2] , line_x[-1] ) )
+    values_local[1].append( (line_x[0], line_x[1], damp_like_real , damp_like_imag , damp_like_amp  , damp_like_phase  , line_x[-2] , line_x[-1] ) )
+    values_local[2].append( (line_x[0], line_x[1], longitud_real  , longitud_imag  , longitud_amp   , longitud_phase   , line_x[-2] , line_x[-1] ) )
+
+    # values_local[0].append( (line_x[0], line_x[1], field_like_real, field_like_imag, np.sqrt((field_like_real)**2 + (field_like_imag)**2 ) , np.arctan2(field_like_imag,field_like_real) , (field_like_imag/field_like_imag if (abs(field_like_imag)>1.e-6) else 0.0) , (np.sqrt((field_like_real)**2 + (field_like_imag)**2 )/np.sqrt((field_like_real)**2 + (field_like_imag)**2 ) if (np.sqrt((field_like_real)**2 + (field_like_imag)**2 )>1.e-6) else 0.0) , line_x[-2] , line_x[-1] ) )
+    # values_local[1].append( (line_x[0], line_x[1], damp_like_real , damp_like_imag , np.sqrt((damp_like_real)**2 + (damp_like_imag)**2 )   , np.arctan2(damp_like_imag,damp_like_real)   , (damp_like_imag/field_like_imag  if (abs(field_like_imag)>1.e-6) else 0.0) , (np.sqrt((damp_like_real)**2 + (damp_like_imag)**2 )/np.sqrt((field_like_real)**2 + (field_like_imag)**2 )   if (np.sqrt((field_like_real)**2 + (field_like_imag)**2 )>1.e-6) else 0.0) , line_x[-2] , line_x[-1] ) )
+    # values_local[2].append( (line_x[0], line_x[1], longitud_real  , longitud_imag  , np.sqrt((longitud_real)**2 +  (longitud_imag)**2 )    , np.arctan2(longitud_imag,longitud_real)     , (longitud_imag/field_like_imag   if (abs(field_like_imag)>1.e-6) else 0.0) , (np.sqrt((longitud_real)**2 +  (longitud_imag)**2 )/np.sqrt((field_like_real)**2 + (field_like_imag)**2 )    if (np.sqrt((field_like_real)**2 + (field_like_imag)**2 )>1.e-6) else 0.0) , line_x[-2] , line_x[-1] ) )
   return values_local
