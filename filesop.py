@@ -56,9 +56,14 @@ def get_magnetization_direction(file):
                     header=None,
                     delim_whitespace=True,
                     usecols=[7,8]).values
-  ndata = np.array(data)
-  mtheta , mphi = ndata[0][0] , ndata[0][1]
-  return [ mtheta, mphi ]
+  if len(data) < 1:
+    mtheta , mphi = 0.0 , 0.0
+    success = False
+  else:
+    ndata = np.array(data)
+    mtheta , mphi = ndata[0][0] , ndata[0][1]
+    success = True
+  return [ mtheta, mphi ], success
 
 ################################################################################
 # Get the desired values from the files
@@ -72,7 +77,9 @@ def get_values(field_component,files,double_angles):
     # Get the value of the field from the filename
     field = get_field_from_name(filename)
     # Get the magnetization direction from file
-    mangle = get_magnetization_direction(filename)
+    mangle, success = get_magnetization_direction(filename)
+    if not success:
+      continue
     # Get the required data from the file
     ndata = read_data_from_file(filename)
     # Building the two-dimension variable to be plotted

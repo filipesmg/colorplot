@@ -63,7 +63,7 @@ if __name__ == "__main__":
     usage()
 
   # Check if multiple of 3 files are given (to make transformation to local frame)
-  if len(sys.argv[1:])%3 != 0 and prm.local :
+  if len(sys.argv[1:])%3 != 0 and (prm.frame=="local") :
     print("Error: 3 components are needed to transform to the local frame of reference!")
     usage()
 
@@ -72,6 +72,11 @@ if __name__ == "__main__":
   # Number of rows and cols
   nrows = (num_plots-1)//prm.ncol+1
   ncols = min(num_plots,prm.ncol)
+
+  # Building filename
+  prm.output_prefix = prm.output_prefix + "_" + prm.frame
+  if prm.prefactor_frequency:
+    prm.output_prefix = prm.output_prefix + "_w"
 
   # Building conversion matrix and reading information from files
   files = []
@@ -95,7 +100,7 @@ if __name__ == "__main__":
   for i in range(nrows):
     i0 = i*ncols
     i1 = (i+1)*ncols
-    values_local[i0:i1] = cf.global_to_local(values[i0:i1],prm.deltas,prm.local)
+    values_local[i0:i1] = cf.global_to_local(values[i0:i1],prm.deltas,prm.frame)
   
 ################################ CUTS ##########################################
   if prm.make_cuts:

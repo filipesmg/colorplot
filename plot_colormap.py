@@ -52,7 +52,7 @@ def plot_colormap(nrows,ncols,x,y,zs,zmin,zmax):
 
       cb = grid[i].cbar_axes[0].colorbar(im)
       grid[i].cbar_axes[0].tick_params(width=2,colors='black')
-      grid[i].cbar_axes[0].set_ylabel(prm.clabel_local[i] if prm.local else prm.clabel_global[i], size=prm.titlesize)
+      grid[i].cbar_axes[0].set_ylabel(prm.clabel_local[i] if prm.frame == "local" else prm.clabel_cartesian[i] if prm.frame == "cartesian" else prm.clabel_spherical[i], size=prm.titlesize)
       grid[i].cbar_axes[0].ticklabel_format(style='sci', scilimits=(0,0))
       grid[i].cbar_axes[0].yaxis.set_offset_position('left')
       cb.solids.set_rasterized(True) 
